@@ -1,0 +1,178 @@
+%
+% Assignment Template
+% Last modified 9/11/2024 by Ziyong Wang
+
+\documentclass[11pt]{article}
+\usepackage[left=0.7in,right=0.7in,top=1in,bottom=0.7in]{geometry}
+\usepackage{fancyhdr} % for header
+\usepackage{graphicx} % for figures
+\usepackage{amsmath}  % for extended math markup
+\usepackage{amssymb}
+\usepackage{inconsolata}
+\usepackage[bookmarks=false]{hyperref} % for URL embedding
+\usepackage[noend]{algpseudocode} % for pseudocode
+\usepackage[plain]{algorithm} % float environment for algorithms
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\StudentName}{Ziyong Wang}
+\newcommand{\StudentID}{522790}
+\newcommand{\HomeworkNumber}{1}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% create header and footer for every page
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textbf{\StudentName}}
+\chead{\textbf{\StudentID}}
+\rhead{\textbf{Assignment \HomeworkNumber}}
+\cfoot{\thepage}
+
+% preferred pseudocode style
+\algrenewcommand{\algorithmicprocedure}{}
+\algrenewcommand{\algorithmicthen}{}
+
+% ``do { ... } while (cond)''
+\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
+
+% ``for (x in y ... z)''
+\newcommand{\ForRange}[3]{\For{#1 \textbf{in} #2 \ \ldots \ #3}}
+
+% these are common math formatting commands that aren't defined by default
+\newcommand{\union}{\cup}
+\newcommand{\isect}{\cap}
+\newcommand{\ceil}[1]{\ensuremath \left\lceil #1 \right\rceil}
+\newcommand{\floor}[1]{\ensuremath \left\lfloor #1 \right\rfloor}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+% text goes here!
+
+\begin{enumerate}
+    \item From the context, we have $P(\text{BS}) = 0.01$, 
+    $P(\text{identified BS} \mid \text{BS}) = 90\%$,
+     $P(\text{identified non-BS} \mid \text{non-BS}) = 90\%$.
+    According to the Bayesian rule, we have
+
+    $$
+    P(\text{BS} \mid \text{identified BS}) = \frac{P(\text{identified BS} \mid \text{BS}) \cdot P(\text{BS})}{P(\text{identified BS})}
+    $$.
+
+    Note that
+
+    $$
+    \begin{aligned}
+        P(\text{identified BS}) 
+        &= P(\text{identified BS} \mid \text{BS}) \cdot P(\text{BS}) + P(\text{identified BS} \mid \text{non-BS}) \cdot P(\text{non-BS}) \\
+        &= P(\text{identified BS} \mid \text{BS}) \cdot P(\text{BS}) + (1 - P(\text{identified non-BS} \mid \text{non-BS})) \cdot (1 - P(\text{BS})) \\
+        &= 90\% \cdot 0.01 + (1 - 90\%) \cdot (1 - 0.01) \\
+        &= 0.108
+    \end{aligned}
+    $$
+
+    Thus, $P(\text{BS} \mid \text{identified BS}) = 90\% \cdot 0.01 / 0.108 = 8.33\%$, which means that I have only an $8.33\%$ chance to be a Bayesian when the test result is positive.
+
+    \item Notice that k is conditionally independent from $\alpha$, $\beta$ when given $\theta$, according to the Bayesian rule,
+    
+    $$
+        p(\theta \mid k, \alpha, \beta) = \frac{Pr(k \mid \theta) \cdot p(\theta \mid \alpha, \beta)}{Pr(k \mid \alpha, \beta)}
+    $$
+
+    Since $Pr(k \mid \alpha, \beta)$ is a function of $k, \alpha ,\beta$ but not relevent to $\theta$, this is a normalizing term which we can omit for now.
+
+    We have
+
+    $$
+    \begin{aligned}
+        p(\theta \mid k, \alpha, \beta) 
+        &\propto Pr(k \mid \theta) \cdot p(\theta \mid \alpha, \beta) \\
+        &= \frac{\theta^{k}e^{-\theta}}{k!} \cdot \frac{\beta^{\alpha}}{\Gamma(\alpha)} \theta^{\alpha-1} e^{-\beta\theta} \\
+        &\propto \theta^{k+\alpha-1}e^{-(\beta+1)\theta} \quad \text{(ignoring the constant terms)}
+    \end{aligned}
+    $$
+
+    Notice this takes the form of the gamma distribution. By using the normalization rule of probability density, $p(\theta \mid k, \alpha, \beta) = \frac{(\beta+1)^{k+\alpha}}{\Gamma(k+\alpha)} \theta^{k+\alpha-1}e^{-(\beta+1)\theta} \sim Gamma(\alpha^{\prime}, \beta^{\prime})$ where $\alpha^{\prime} = \alpha+k$ and $\beta^{\prime}=\beta+1$.
+
+    If we weren't using the normalizing trick, we have
+
+    $$
+    \begin{aligned}
+        p(\theta \mid k, \alpha, \beta) 
+        &= \frac{Pr(k \mid \theta) \cdot p(\theta \mid \alpha, \beta)}{Pr(k \mid \alpha, \beta)} \\
+        &= \frac{Pr(k \mid \theta) \cdot p(\theta \mid \alpha, \beta)}{\int_{0}^{+\infty} Pr(k \mid \theta) \cdot p(\theta \mid \alpha, \beta) d \theta} \\
+        &= \frac{\frac{\theta^{k}e^{-\theta}}{k!} \cdot \frac{\beta^{\alpha}}{\Gamma(\alpha)} \theta^{\alpha-1} e^{-\beta\theta}}{\int_{0}^{+\infty} \frac{\theta^{k}e^{-\theta}}{k!} \cdot \frac{\beta^{\alpha}}{\Gamma(\alpha)} \theta^{\alpha-1} e^{-\beta\theta} d \theta} \\
+        &= \frac{\theta^{k+\alpha-1}e^{-(\beta+1)\theta}}{\int_{0}^{+\infty} \theta^{k+\alpha-1}e^{-(\beta+1)\theta} d \theta}
+    \end{aligned}
+    $$
+
+    Note that
+
+    $$
+    \begin{aligned}
+        \int_{0}^{+\infty} \theta^{k+\alpha-1}e^{-(\beta+1)\theta} d \theta
+        &= - \left(\int_{0}^{+\infty} \theta^{k+\alpha-1} d e^{-(\beta+1)\theta}\right) / (\beta + 1) \\
+        &= \left(\int_{0}^{+\infty} e^{-(\beta+1)\theta} d \theta^{k+\alpha-1}\right) / (\beta + 1) - \left.\left(\theta^{k+\alpha-1}e^{-(\beta+1)\theta}\right) \right|_{0}^{+\infty} / (\beta + 1) \\
+        &= \frac{k+\alpha-1}{\beta + 1} \int_{0}^{+\infty} \theta^{k+\alpha-2} e^{-(\beta+1)\theta} d \theta \\
+        &= \cdots \\
+        &= \frac{\Gamma(k+\alpha)}{(\beta+1)^{k+\alpha-1}} \int_{0}^{+\infty} \theta^{0}e^{-(\beta+1)\theta} d \theta \\
+        &= \frac{\Gamma(k+\alpha)}{(\beta+1)^{k+\alpha-1}} \left.\frac{e^{-(\beta+1)\theta}}{-(\beta+1)}\right|_{0}^{+\infty} \\
+        &= \frac{\Gamma(k+\alpha)}{(\beta+1)^{k+\alpha}}
+    \end{aligned}
+    $$
+
+    Thus, 
+
+    $$
+    p(\theta \mid k, \alpha, \beta) = \frac{\theta^{k+\alpha-1}e^{-(\beta+1)\theta}}{\int_{0}^{+\infty} \theta^{k+\alpha-1}e^{-(\beta+1)\theta} d \theta} = \frac{(\beta+1)^{k+\alpha}}{\Gamma(k+\alpha)} \theta^{k+\alpha-1}e^{-(\beta+1)\theta}
+    $$
+
+    is the same as above.
+
+    \item In this case,
+    
+    $$
+    \begin{aligned}
+        p(\theta \mid k_{1}, k_{2}, \dots, k_{n}, \alpha, \beta) 
+        &\propto \prod_{i=1}^{n} Pr(k_i \mid \theta) \cdot p(\theta \mid \alpha, \beta) \\
+        &\propto \prod_{i=1}^{n} \theta^{k_{i}}e^{-\theta} \cdot \theta^{\alpha-1}e^{-\beta \theta} \\
+        &= \theta^{\sum_{i=1}^{n} k_i + \alpha - 1} e^{-(\beta + n)\theta} \\
+        &\sim Gamma(\alpha + \sum_{i=1}^{n} k_i, \beta + n)
+    \end{aligned}
+    $$
+
+    Thus, the posterior mean is $\frac{\alpha + \sum_{i=1}^{n} k_i}{\beta + n}$, posterior mode $\frac{\alpha + \sum_{i=1}^{n} k_i - 1}{\beta + n}$ if $\alpha + \sum_{i=1}^{n} k_i \geq 1$ else $0$.
+
+    In this and the previous problem, parameter $\alpha$ and $\beta$ act as posterior (pseudo) "sample sum" and "sample count" respectively. As $n \rightarrow \infty$, prior parameter $\alpha$ and $\beta$ get dominated by the actual observed sample sum and count $\sum_{i=1}^{n} k_i$ and $n$.
+
+    \item The likelihood of bubble location $x$ is $p(x \mid \theta) = \mathbf{1}(\theta - 5 \leq x \leq \theta + 5) / 10$ where 
+    
+    $$
+    \begin{aligned}
+        \mathbf{1}(a \leq x \leq b)
+        &= 1, \quad \text{if $a \leq x \leq b$,} \\
+        &= 0, \quad \text{else.}
+    \end{aligned}
+    $$
+
+    Thus the posterior
+
+    $$
+    \begin{aligned}
+        p(\theta \mid x_{1}, x_{2})
+        &= \frac{p(x_{1} \mid \theta) p(x_{2} \mid \theta) p(\theta)}{p(x_{1}, x_{2})} \\
+        &= \frac{p(x_{1} \mid \theta) p(x_{2} \mid \theta) p(\theta)}{\int_{-\infty}^{+\infty} p(x_{1}, x_{2} \mid \theta) p(\theta) d \theta} \\
+        &= \frac{(\mathbf{1}(\theta - 5 \leq x_{1} \leq \theta + 5) / 10) \cdot (\mathbf{1}(\theta - 5 \leq x_{2} \leq \theta + 5) / 10) \cdot  1}{\int_{-\infty}^{+\infty} \mathbf{1}(\theta - 5 \leq x_{1} \leq \theta + 5) \cdot \mathbf{1}(\theta - 5 \leq x_{2} \leq \theta + 5) / 100 d \theta} \\
+        &= \frac{\mathbf{1}(\min(x_{1}, x_2) \geq \theta - 5) \cdot \mathbf{1}(\max(x_{1}, x_2) \leq \theta + 5)}{\int_{-\infty}^{+\infty} \mathbf{1}(\min(x_{1}, x_2) \geq \theta - 5) \cdot \mathbf{1}(\max(x_{1}, x_2) \leq \theta + 5) d \theta} \\
+        &= \frac{\mathbf{1}(\max(x_{1}, x_2) - 5 \leq \theta \leq \min(x_{1}, x_2) + 5)}{\int_{-\infty}^{+\infty} \mathbf{1}(\max(x_{1}, x_2) - 5 \leq \theta \leq \min(x_{1}, x_2) + 5) d \theta} \\
+        &= \frac{\mathbf{1}(\max(x_{1}, x_2) - 5 \leq \theta \leq \min(x_{1}, x_2) + 5)}{\min(x_{1}, x_2) - \max(x_{1}, x_2) + 10}
+    \end{aligned}
+    $$
+
+    is a (normalized) uniform distribution over $[\max(x_{1}, x_2) - 5, \min(x_{1}, x_2) + 5]$.
+
+\end{enumerate}
+
+\end{document}
